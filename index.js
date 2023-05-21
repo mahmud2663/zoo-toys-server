@@ -21,13 +21,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
 
-    await client.connect(err => {
-      if(err){ console.error(err); return false;}
-      // connection to mongo is successful, listen for requests
-      app.listen(port,()=>{
-        console.log(`Server is running at http://localhost:${port}`)
-      })
-  });
+    await client.connect();
     const database = client.db("zooToys");
     const collection = database.collection("toysData");
 
@@ -113,7 +107,12 @@ async function run() {
    //await client.close();
   }
 }
-run().catch(console.dir);
+run().then(()=>{
+  app.listen(port,()=>{
+    console.log(`Server is running at http://localhost:${port}`)
+  })
+
+})
 
 app.get('/',(req,res)=>{
     res.send('Backend is Running');
