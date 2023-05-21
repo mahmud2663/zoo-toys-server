@@ -1,32 +1,32 @@
-const express = require("express");
-const cors = require("cors");
-const { MongoClient, ObjectId } = require("mongodb");
-require("dotenv").config();
+require('dotenv').config()
+const express= require('express');
+const cors= require('cors');
+const app= express();
+const port= process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-const app = express();
-const port = process.env.PORT || 3000;
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5fydwdl.mongodb.net/?retryWrites=true&w=majority`;
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Toy is coming");
-});
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5fydwdl.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
 
 async function run() {
   try {
-    await client.connect();
-    console.log("Connected to MongoDB");
 
+    await client.connect();
     const database = client.db("zooToys");
     const collection = database.collection("toysData");
+
 
     app.post("/toy", async (req, res) => {
       const toy = req.body;
@@ -108,15 +108,23 @@ async function run() {
       const result = await collection.findOne(data, options);
       res.send(result);
     });
-
-    console.log("Server is running");
-  } catch (error) {
-    console.error("Error connecting to MongoDB", error);
+   
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+   
+   //await client.close();
   }
 }
+run().then(()=>{
+  app.listen(port,()=>{
+    console.log(`Server is running at http://localhost:${port}`)
+})
 
-run().app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-}).catch(console.error);
+}).catch(console.dir);
 
+app.get('/',(req,res)=>{
+    res.send('Backend is Running');
+
+});
 
