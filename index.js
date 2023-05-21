@@ -105,11 +105,8 @@ async function run() {
    //await client.close();
   }
 }
-run().then(()=>{
-  app.listen(port,()=>{
+run().app.listen(port,()=>{
     console.log(`Server is running at http://localhost:${port}`)
-})
-
 }).catch(console.dir);
 
 app.get('/',(req,res)=>{
