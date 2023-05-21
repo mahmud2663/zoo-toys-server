@@ -5,7 +5,6 @@ const app= express();
 const port= process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5fydwdl.mongodb.net/?retryWrites=true&w=majority`;
 
 app.use(cors());
@@ -26,7 +25,6 @@ async function run() {
     await client.connect();
     const database = client.db("zooToys");
     const collection = database.collection("toysData");
-
 
     app.post("/toy", async (req, res) => {
       const toy = req.body;
@@ -80,15 +78,6 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/toydata", async (req, res) => {
-      let query = {};
-      if (req.query?._id) {
-        query = { _id: new ObjectId(req.query._id) };
-      }
-      const result = await collection.find(query).toArray();
-      res.send(result);
-    });
-
     app.get("/toy/id/:toyId", async (req, res) => {
       const id = req.params.toyId;
       const data = { _id: new ObjectId(id) };
@@ -127,4 +116,3 @@ app.get('/',(req,res)=>{
     res.send('Backend is Running');
 
 });
-
